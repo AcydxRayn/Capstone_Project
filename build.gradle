@@ -9,12 +9,14 @@ buildscript {
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
+        classpath 'com.google.gms:google-services:3.0.0'
     }
 }
 
 allprojects {
     repositories {
         jcenter()
+        maven { url 'https://maven.fabric.io/public' }
     }
 }
 
@@ -40,6 +42,8 @@ ext {
     espressoVersion = '2.2.2'
     hamcrestVersion = '1.3'
     runnerVersion = '0.5'
+    firebaseAuthVersion = '10.2.0'
+    firebaseAuthUiVersion = '1.2.0'
 
 }
 
