@@ -68,6 +68,7 @@ public class LoginActivity extends BaseActivity  {
                 onToggleLayoutVisibility();
                 break;
             case R.id.btn_create:
+                onCreateUserWithEmail();
                 break;
         }
     }
