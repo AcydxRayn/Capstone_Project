@@ -14,7 +14,9 @@ import org.m2design.militaryconnect.BuildConfig;
  */
 public class Logging {
 
-    private static final String ON_DEBUG_LOG = "onDebugLogUser:";
+    private static final String ON_DEBUG_LOG = "onDebugLog:";
+    private static final String ON_DEBUG_LOG_USER = "onDebugLogUser:";
+    private static final String ON_DEBUG_NO_USER = "USER_NOT_AVAILABLE";
 
     /**
      * Utility method that will get the calling class and method and print a {@link Log} message.
@@ -28,7 +30,8 @@ public class Logging {
     }
 
     /**
-     * Print {@link Log} message that contains a class name which isn't the calling class.
+     * Use this constructor to print a debug mode only log message that adds the class name in
+     * the parameter. (The class parameter should be
      * @param clazz Class that needs to be printed in the Log and is not the calling class.
      * @param msg Message to post in the Log.
      */
@@ -42,6 +45,7 @@ public class Logging {
     /**
      * Print a {@link Log} message that includes the Uid of the current user.
      * Additionally, it will print the current Uid {@link FirebaseUser} to the message.
+     * Format Example - onDebugLogUser:LoginActivity:userId:myMessage
      * @param msg   The message to print.
      */
     public static void onDebugLogUser(@NonNull String msg) {
@@ -49,7 +53,11 @@ public class Logging {
         if (!isDebug())
             return;
         String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        Log.d(getClassSimpleName(), ON_DEBUG_LOG + getMethodName() + ":" + userId + msg);
+        if (userId.equals("")) {
+            userId = ON_DEBUG_NO_USER;
+        }
+        Log.d(getClassSimpleName(), ON_DEBUG_LOG_USER + getMethodName() + ":" + userId + ":" +
+                msg);
     }
 
     /**

@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "34251218142",
+    "firebase_url": "https://militaryconnect-1249f.firebaseio.com",
+    "project_id": "militaryconnect-1249f",
+    "storage_bucket": "militaryconnect-1249f.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:34251218142:android:a45431d1cda8c04a",
+        "android_client_info": {
+          "package_name": "org.m2design.militaryconnect"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "34251218142-ukba2fbbfgoql7g9io2m2cn72hou30mg.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "org.m2design.militaryconnect",
+            "certificate_hash": "fce4329b96b22b21163c36c497efd3a89ab9b029"
+          }
+        },
+        {
+          "client_id": "34251218142-krcc1i600do48l9c0dk237tpisost640.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCu_M91mBxDAPh97FRDOnJeZtSXAHezwd8"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "34251218142-krcc1i600do48l9c0dk237tpisost640.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

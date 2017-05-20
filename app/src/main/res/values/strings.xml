@@ -3,7 +3,9 @@
     <string name="title_login">Login to Begin</string>
     <string name="email_address">Email Address</string>
     <string name="password">Password</string>
-    <string name="register">Register</string>
+    <string name="create_account">
+        <u>Create Account</u>
+    </string>
     <string name="login">Login</string>
     <string name="username">Username</string>
     <string name="cancel">Cancel</string>
@@ -13,4 +15,13 @@
     <string name="title_dashboard">Dashboard</string>
     <string name="title_notifications">Notifications</string>
     <string name="unknown_sign_in_response">Unknown sign in response</string>
+    <string name="unknown_response">Unknown login server response</string>
+    <string name="sign_in_cancelled">Sign in cancelled</string>
+    <string name="no_internet_connection">Device is currently off line. An internet connection
+        required
+    </string>
+    <string name="unknown_error">Unknown login error</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

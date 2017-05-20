@@ -1,50 +1,53 @@
 package org.m2design.militaryconnect;
 
-import static org.m2design.militaryconnect.util.Logging.onDebugLog;
-
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
+import android.support.annotation.MainThread;
 import android.support.annotation.Nullable;
+import android.support.annotation.StringRes;
+import android.support.constraint.ConstraintLayout;
+import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputLayout;
-import android.text.Editable;
-import android.text.TextUtils;
-import android.text.TextWatcher;
-import android.transition.TransitionManager;
-import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthResult;
+import com.firebase.ui.auth.ErrorCodes;
+import com.firebase.ui.auth.IdpResponse;
+import com.firebase.ui.auth.ResultCodes;
+import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.BindViews;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
 
 /**
  * Created by ajmyr on 5/15/2017.
  */
 
-public class LoginActivity extends BaseActivity  {
+public class LoginActivity extends BaseActivity {
 
-    // EditText fields for Email, Username, and Password
-    @BindView(R.id.et_email) TextInputLayout mEtEmail;
-    @BindView(R.id.et_password) TextInputLayout mEtPassword;
-    @BindView(R.id.et_username) TextInputLayout mEtUsername;
+    private static final int RC_SIGN_IN = 123;
 
-    // List of buttons for button visibility changes.
-    @BindViews({R.id.btn_register, R.id.btn_login}) List<Button> mLoginButtonList;
-    @BindViews({R.id.btn_create, R.id.btn_cancel}) List<Button> mCreateUserButtonList;
+    @BindView(R.id.et_email)
+    TextInputLayout mEtEmail;
 
-    // ViewGroup for Animation change
-    @BindView(R.id.layout_container) ViewGroup mLayoutContainer;
+    @BindView(R.id.et_password)
+    TextInputLayout mEtPassword;
 
-    // Boolean for toggling the Register button text and Username text input layout visibility
-    boolean isUserRegistering;
+    @BindView(R.id.et_username)
+    TextInputLayout mEtUsername;
+
+    @BindViews({R.id.btn_register, R.id.btn_login})
+    List<Button> mLoginButtonList;
+
+    @BindViews({R.id.btn_create, R.id.btn_cancel})
+    List<Button> mCreateUserButtonList;
+
+    @BindView(R.id.layout_container)
+    ViewGroup mRootView;
 
 
     @Override
@@ -52,67 +55,71 @@ public class LoginActivity extends BaseActivity  {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         ButterKnife.bind(this);
+        mRootView = (ConstraintLayout) findViewById(R.id.layout_container);
 
-        isUserRegistering = false;
-    }
-
-    @OnClick({R.id.btn_register, R.id.btn_login, R.id.btn_create, R.id.btn_cancel})
-    public void onViewClicked(View view) {
-        switch (view.getId()) {
-            case R.id.btn_register:
-                onToggleLayoutVisibility();
-                break;
-            case R.id.btn_login:
-                break;
-            case R.id.btn_cancel:
-                onToggleLayoutVisibility();
-                break;
-            case R.id.btn_create:
-                break;
+        FirebaseAuth auth = FirebaseAuth.getInstance();
+        if (auth.getCurrentUser() != null) {
+            startActivity(HomeScreenActivity.createIntent(this, null));
+            finish();
         }
-    }
-
-    private void onLoginButtonEnableCheck() {
 
     }
 
-    private boolean validateForm() {
-        boolean result = true;
-        if (TextUtils.isEmpty(mEtEmail.getEditText().getText().toString())) {
-            mEtEmail.setError("Required");
-            result = false;
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == RC_SIGN_IN) {
+            handleSignInResponse(resultCode, data);
+            return;
+        }
+
+        showSnackbar(R.string.unknown_response);
+    }
+
+
+
+    @MainThread
+    private void handleSignInResponse(int resultCode, Intent data) {
+        IdpResponse response = IdpResponse.fromResultIntent(data);
+
+        // Successfully signed in
+        if (resultCode == ResultCodes.OK) {
+            startActivity(HomeScreenActivity.createIntent(this, response));
+            finish();
+            return;
         } else {
-            mEtEmail.setError(null);
+            // Sign in failed
+            if (response == null) {
+                // User pressed back button
+                showSnackbar(R.string.sign_in_cancelled);
+                return;
+            }
+
+            if (response.getErrorCode() == ErrorCodes.NO_NETWORK) {
+                showSnackbar(R.string.no_internet_connection);
+                return;
+            }
+
+            if (response.getErrorCode() == ErrorCodes.UNKNOWN_ERROR) {
+                showSnackbar(R.string.unknown_error);
+                return;
+            }
         }
 
-        if (TextUtils.isEmpty(mEtPassword.getEditText().getText().toString())) {
-            mEtPassword.setError("Required");
-            result = false;
-        } else {
-            mEtPassword.setError(null);
+        showSnackbar(R.string.unknown_sign_in_response);
+    }
+
+    @MainThread
+    private void showSnackbar(@StringRes int errorMessageRes) {
+        Snackbar.make(mRootView, errorMessageRes, Snackbar.LENGTH_LONG).show();
+    }
+
+    public class LoginButtonHandler {
+
+        private Context mContext;
+
+        public LoginButtonHandler(Context context) {
+
         }
-        return result;
-    }
-
-    /**
-     * Uses {@link ButterKnife.Setter} inside {@link BaseActivity} to change button and text
-     * input layout visibility.
-     */
-    private void onToggleLayoutVisibility() {
-        // Create TransitionGroup and toggle visibility boolean
-        TransitionManager.beginDelayedTransition(mLayoutContainer);
-        isUserRegistering = !isUserRegistering;
-
-        // Use ButterKnife view list to toggle buttons for register, login, cancel, and create
-        ButterKnife.apply(mLoginButtonList, VIEW_GONE, isUserRegistering);
-        ButterKnife.apply(mCreateUserButtonList, VIEW_GONE, !isUserRegistering);
-        ButterKnife.apply(mEtUsername, VIEW_GONE, !isUserRegistering);
-    }
-
-    private void onCreateUserWithEmail(@NonNull String email, @NonNull String password) {
-        getAuth().createUserWithEmailAndPassword(email, password)
-                .addOnCompleteListener(this, task -> {
-
-                });
     }
 }

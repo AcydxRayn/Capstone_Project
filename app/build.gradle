@@ -3,6 +3,11 @@ apply plugin: 'com.android.application'
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
     buildToolsVersion rootProject.ext.buildToolsVersion
+
+    dataBinding {
+        enabled = true
+    }
+
     defaultConfig {
         applicationId "org.m2design.militaryconnect"
         minSdkVersion rootProject.ext.minSdkVersion
@@ -10,6 +15,7 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
 
     }
     // Java
@@ -56,10 +62,28 @@ dependencies {
     compile "com.jakewharton:butterknife:$rootProject.butterknifeVersion"
     annotationProcessor "com.jakewharton:butterknife-compiler:$rootProject.butterknifeVersion"
 
+    // GreenRobot EventBus
+    compile 'org.greenrobot:eventbus:3.0.0'
+
+    // Expandle TextView (https://github.com/Manabu-GT/ExpandableTextView)
+//    compile 'com.ms-square:expandableTextView:0.1.4'
+
+
+    // Firebase Dependencies
+    compile "com.firebaseui:firebase-ui-auth:$rootProject.firebaseUiVersion"
+    compile "com.google.firebase:firebase-auth:$rootProject.firebaseVersion"
+    compile "com.google.firebase:firebase-database:$rootProject.firebaseVersion"
+    compile 'com.firebase:firebase-jobdispatcher:0.6.0'
+
+    // Leak Canary
+    debugCompile 'com.squareup.leakcanary:leakcanary-android:1.5.1'
+    releaseCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.5.1'
+    testCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.5.1'
+
     // Dependencies for local unit tests
     testCompile "junit:junit:$rootProject.ext.junitVersion"
-    testCompile "org.mockito:mockito-core:$rootProject.ext.mockitoVersion"
-    testCompile "org.hamcrest:hamcrest-all:$rootProject.ext.hamcrestVersion"
+   /* testCompile "org.mockito:mockito-core:$rootProject.ext.mockitoVersion"
+    testCompile "org.hamcrest:hamcrest-all:$rootProject.ext.hamcrestVersion"*/
 
     // Android Testing Support Library's runner and rules
     androidTestCompile "com.android.support.test:runner:$rootProject.ext.runnerVersion"
@@ -67,14 +91,14 @@ dependencies {
 
     // Dependencies for Android unit tests
     androidTestCompile "junit:junit:$rootProject.ext.junitVersion"
-    androidTestCompile "org.mockito:mockito-core:$rootProject.ext.mockitoVersion"
+//    androidTestCompile "org.mockito:mockito-core:$rootProject.ext.mockitoVersion"
 //    androidTestCompile 'com.google.dexmaker:dexmaker:1.2'
 //    androidTestCompile 'com.google.dexmaker:dexmaker-mockito:1.2'
 
-    // Espresso UI Testing
+   /* // Espresso UI Testing
     androidTestCompile "com.android.support.test.espresso:espresso-core:$rootProject.espressoVersion"
     androidTestCompile "com.android.support.test.espresso:espresso-contrib:$rootProject.espressoVersion"
-    androidTestCompile "com.android.support.test.espresso:espresso-intents:$rootProject.espressoVersion"
+    androidTestCompile "com.android.support.test.espresso:espresso-intents:$rootProject.espressoVersion"*/
 
     // Resolve conflicts between main and test APK:
     androidTestCompile "com.android.support:support-annotations:$rootProject.supportLibraryVersion"
@@ -83,10 +107,9 @@ dependencies {
     androidTestCompile "com.android.support:appcompat-v7:$rootProject.supportLibraryVersion"
     androidTestCompile "com.android.support:design:$rootProject.supportLibraryVersion"
 
-    // FirebaseUI Auth only
-    compile "com.firebaseui:firebase-ui-auth:$rootProject.ext.firebaseAuthUiVersion"
-    compile "com.google.firebase:firebase-auth:$rootProject.ext.firebaseAuthVersion"
+
 }
+
 
 
 apply plugin: 'com.google.gms.google-services'
