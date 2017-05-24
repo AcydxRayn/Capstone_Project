@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "804071011375",
+    "firebase_url": "https://milcon-fe7da.firebaseio.com",
+    "project_id": "milcon-fe7da",
+    "storage_bucket": "milcon-fe7da.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:804071011375:android:51d1bca9a733804c",
+        "android_client_info": {
+          "package_name": "org.m2design.milcon"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "804071011375-307gb87el260ruu7vdd64e24ii2mvui4.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "org.m2design.milcon",
+            "certificate_hash": "fce4329b96b22b21163c36c497efd3a89ab9b029"
+          }
+        },
+        {
+          "client_id": "804071011375-4l4sdg843e4o4p7ce94n10lk2lgjuaj6.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDzdhHEq18lTgy8vjLsOSDvBGyKGrO6uQk"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "804071011375-4l4sdg843e4o4p7ce94n10lk2lgjuaj6.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

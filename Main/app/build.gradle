@@ -1,0 +1,59 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion rootProject.ext.compileSdkVersion
+    buildToolsVersion rootProject.ext.buildToolsVersion
+
+    dataBinding {
+        enabled = true
+    }
+    defaultConfig {
+        applicationId "org.m2design.milcon"
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
+        versionCode rootProject.ext.versionCode
+        versionName rootProject.ext.versionName
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    }
+
+    // Java
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+    androidTestCompile("com.android.support.test.espresso:espresso-core:$rootProject.espressoLibVersion", {
+        exclude group: 'com.android.support', module: 'support-annotations'
+    })
+    compile "com.android.support:appcompat-v7:$rootProject.supportLibVersion"
+    compile "com.android.support:design:$rootProject.supportLibVersion"
+
+    testCompile "junit:junit:$rootProject.jUnitLibVersion"
+    compile "com.android.support.constraint:constraint-layout:$rootProject.constraintLibVersion"
+
+    // LifeCycle, LiveData and ViewModel dependencies
+    compile "android.arch.lifecycle:runtime:$rootProject.architectureComponentsLibVersion"
+    compile "android.arch.lifecycle:extensions:$rootProject.architectureComponentsLibVersion"
+    annotationProcessor "android.arch.lifecycle:compiler:$rootProject.architectureComponentsLibVersion"
+
+    compile "com.google.firebase:firebase-auth:$rootProject.firebaseAuthLibVersion"
+
+    // Form Validation Library (https://github.com/thyrlian/AwesomeValidation)
+    compile 'com.basgeekball:awesome-validation:2.0'
+
+    compile "com.google.firebase:firebase-database:$rootProject.firebaseAuthLibVersion"
+}
+
+
+
+apply plugin: 'com.google.gms.google-services'

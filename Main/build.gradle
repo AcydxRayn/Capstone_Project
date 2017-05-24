@@ -1,0 +1,49 @@
+// Top-level build file where you can add configuration options common to all sub-projects/modules.
+
+buildscript {
+
+    repositories {
+        maven { url 'https://maven.google.com' }
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:3.0.0-alpha1'
+
+        // NOTE: Do not place your application dependencies here; they belong
+        // in the individual module build.gradle files
+        classpath 'com.google.gms:google-services:3.0.0'
+    }
+}
+
+allprojects {
+    repositories {
+        jcenter()
+        maven { url 'https://maven.google.com' }
+    }
+}
+
+// One location for all version/build versions
+ext {
+    // Tools versions
+    buildToolsVersion = '25.0.2'
+    compileSdkVersion = 25
+    minSdkVersion = 24
+    targetSdkVersion = 25
+
+    // App versions
+    versionCode = 1
+    versionName = "1.0"
+
+    // Dependency versions
+    supportLibVersion = '25.3.1'
+    espressoLibVersion = '2.2.2'
+    jUnitLibVersion = '4.12'
+    constraintLibVersion = '1.0.2'
+    architectureComponentsLibVersion = '1.0.0-alpha1'
+    firebaseAuthLibVersion = '10.2.6'
+
+}
+
+task clean(type: Delete) {
+    delete rootProject.buildDir
+}
