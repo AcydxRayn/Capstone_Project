@@ -10,8 +10,17 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserProfileChangeRequest;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
 import org.m2design.milcon.databinding.ActivityLoginBinding;
-import org.m2design.milcon.homescreen.MainActivity;
+import org.m2design.milcon.models.User;
+
+import java.util.HashMap;
+import java.util.Map;
 
 
 public class LoginActivity extends BaseActivity {
@@ -20,7 +29,7 @@ public class LoginActivity extends BaseActivity {
 
     ActivityLoginBinding mLoginBinding;
 
-    // InputTextLayout views. Used to Hide/Show based on registering or not.
+    // InputTextLayout views.
     private TextInputLayout mInputLayoutDisplayName;
     private TextInputLayout mInputLayoutPasswordConfirm;
     private TextInputLayout mInputLayoutEmail;
@@ -32,20 +41,16 @@ public class LoginActivity extends BaseActivity {
     private Button mButtonLogin;
     private Button mButtonCancel;
 
+    private DatabaseReference mDatabase;
+
     // RootView for this activity
     private ConstraintLayout mRootView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // No need to go through the login workflow if we're already logged in.
-        if (getUser() != null) {
-            // User is logged in, start MainActivity
-            startActivity(new Intent(this, MainActivity.class));
-        }
-
+        // Set DataBinding layout and the loginActivity variable to this
         mLoginBinding = DataBindingUtil.setContentView(this, R.layout.activity_login);
-        // Set DataBinding loginActivity variable
         mLoginBinding.setLoginActivity(this);
         bindViews();
     }
@@ -72,12 +77,23 @@ public class LoginActivity extends BaseActivity {
      *
      * @param view The view that was clicked. Use the view's id to choose the switch case.
      */
+    @SuppressWarnings("ConstantConditions")
     public void onButtonClicked(View view) {
+
+        String email = mInputLayoutEmail.getEditText().getText().toString();
+        String password = mInputLayoutPassword.getEditText().getText().toString();
+        // Display name is not assigned until we receive a register click to avoid any error.
+        String displayName;
+
+        if (!mInputLayoutDisplayName.getEditText().getText().toString().isEmpty()) {
+
+        }
+
         // Id used in the switch statement.
         int id = view.getId();
         switch (id) {
             case R.id.buttonLogin:
-                signInWithEmail();
+                signInWithEmail(email, password);
                 break;
             case R.id.buttonCreateAccount:
                 // Toggle the creation form views
@@ -86,7 +102,8 @@ public class LoginActivity extends BaseActivity {
                 mInputLayoutDisplayName.requestFocus();
                 break;
             case R.id.buttonRegister:
-                registerNewUser();
+                displayName = mInputLayoutDisplayName.getEditText().getText().toString();
+                registerNewUser(email, password, displayName);
                 break;
             case R.id.buttonCancel:
                 // Toggle the creation form views
@@ -98,10 +115,7 @@ public class LoginActivity extends BaseActivity {
     }
 
     @SuppressWarnings("ConstantConditions")
-    private void signInWithEmail() {
-        // Get our strings from the
-        String email = mInputLayoutEmail.getEditText().getText().toString();
-        String password = mInputLayoutPassword.getEditText().getText().toString();
+    private void signInWithEmail(String email, String password) {
 
         showProgressDialog();
 
@@ -109,9 +123,7 @@ public class LoginActivity extends BaseActivity {
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         // Sign in successful
-                        Log.d(TAG, "signInWithEmail: User sign-in success");
-                        startActivity(new Intent(this, MainActivity.class));
-                        hideProgressDialog();
+                        onAuthSuccessStartMainActivity();
                     } else {
                         // If sign in fails, display a message ot the user.
                         Log.w(TAG, "signInWithEmail: Authentication Failure", task.getException());
@@ -126,24 +138,19 @@ public class LoginActivity extends BaseActivity {
     }
 
     @SuppressWarnings("ConstantConditions")
-    private void resetPasswordInputFields() {
-        mInputLayoutPassword.setError(null);
-        mInputLayoutPasswordConfirm.setError(null);
-        mInputLayoutPassword.getEditText().setText(getString(R.string.empty_string));
-        mInputLayoutPasswordConfirm.getEditText().setText(getString(R.string.empty_string));
-    }
-
-    @SuppressWarnings("ConstantConditions")
-    private void registerNewUser() {
+    private void registerNewUser(String email, String password, String displayName) {
         if (validatePasswordFieldsMatch()) {
             showProgressDialog();
-            getAuth().createUserWithEmailAndPassword(mInputLayoutEmail.getEditText().getText()
-                    .toString(), mInputLayoutPassword.getEditText().getText().toString())
+            getAuth().createUserWithEmailAndPassword(email, password)
                     .addOnCompleteListener(task -> {
                         if (task.isSuccessful()) {
 
-                            // User creation success, Start MainActivity.
-                            startActivity(new Intent(this, MainActivity.class));
+                            FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                            // Add user to Firebase RealTimeDatabase
+                            writeNewUserToDatabase(user.getUid(), email, displayName);
+
+                            // Add user display name to FirebaseAuth
+                            updateUserProfileWithDisplayName(displayName);
                         } else {
                             // User creation failed
                             hideProgressDialog();
@@ -158,6 +165,54 @@ public class LoginActivity extends BaseActivity {
             mInputLayoutPassword.setError(getString(R.string.error_password_match));
             mInputLayoutPasswordConfirm.setError(getString(R.string.error_password_match));
         }
+    }
+
+    @SuppressWarnings("ConstantConditions")
+    private void updateUserProfileWithDisplayName(String displayName) {
+        // Creation success, add users display name to his new account.
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null) {
+            UserProfileChangeRequest profileUpdates = new
+                    UserProfileChangeRequest.Builder()
+                    .setDisplayName(displayName)
+                    .build();
+
+            user.updateProfile(profileUpdates)
+                    .addOnCompleteListener(task1 -> {
+                        if (task1.isSuccessful()) {
+                            // Start MainActivity.
+                            onAuthSuccessStartMainActivity();
+                        }
+                    });
+        }
+    }
+
+    @SuppressWarnings("ConstantConditions")
+    private void writeNewUserToDatabase(String uid, String email, String displayName) {
+        mDatabase = FirebaseDatabase.getInstance().getReference();
+
+        String key = mDatabase.child("users").push().getKey();
+
+        User user = new User(uid, email, displayName);
+        Map<String, Object> userValues = user.newUserToMap();
+
+        Map<String, Object> childUpdates = new HashMap<>();
+        childUpdates.put("/users/" + key, userValues);
+        mDatabase.updateChildren(childUpdates);
+    }
+
+    private void onAuthSuccessStartMainActivity() {
+        startActivity(new Intent(LoginActivity.this, MainActivity.class));
+        hideProgressDialog();
+        finish();
+    }
+
+    @SuppressWarnings("ConstantConditions")
+    private void resetPasswordInputFields() {
+        mInputLayoutPassword.setError(null);
+        mInputLayoutPasswordConfirm.setError(null);
+        mInputLayoutPassword.getEditText().setText(getString(R.string.empty_string));
+        mInputLayoutPasswordConfirm.getEditText().setText(getString(R.string.empty_string));
     }
 
     @SuppressWarnings("ConstantConditions")

@@ -11,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:animateLayoutChanges="true"
-        tools:context="org.m2design.milcon.LoginActivity">
+        tools:context=".LoginActivity">
 
         <ImageView
             android:id="@+id/imageViewBackground"

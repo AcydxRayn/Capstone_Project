@@ -1,4 +1,4 @@
-package org.m2design.milcon.homescreen;
+package org.m2design.milcon.main;
 
 import android.arch.lifecycle.LifecycleFragment;
 import android.arch.lifecycle.ViewModelProviders;
@@ -24,7 +24,6 @@ public class UserProfileFragment extends LifecycleFragment {
         super.onActivityCreated(savedInstanceState);
         String userId = getArguments().getString(UID_KEY);
         mProfileViewModel = ViewModelProviders.of(this).get(UserProfileViewModel.class);
-        mProfileViewModel.init(userId);
     }
 
     @Nullable

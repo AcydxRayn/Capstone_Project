@@ -52,6 +52,7 @@ dependencies {
     compile 'com.basgeekball:awesome-validation:2.0'
 
     compile "com.google.firebase:firebase-database:$rootProject.firebaseAuthLibVersion"
+    compile "com.firebaseui:firebase-ui-database:$rootProject.firebaseUILibVersion"
 }
 
 
